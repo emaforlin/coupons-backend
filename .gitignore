@@ -1,0 +1,7 @@
+# Sensitive data
+config.yaml
+misc/
+
+# temp files
+
+**/*tmp*
