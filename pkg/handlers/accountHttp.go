@@ -3,13 +3,32 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/emaforlin/coupons-app/pkg/accounts/models"
-	"github.com/emaforlin/coupons-app/pkg/accounts/usecases"
+	"github.com/emaforlin/coupons-app/pkg/models"
+	"github.com/emaforlin/coupons-app/pkg/usecases"
 	"github.com/labstack/echo/v4"
 )
 
 type accountHttpHandler struct {
 	accountUsecase usecases.AccountUsecase
+}
+
+// SignupFoodPlace implements AccountHandler.
+func (a *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
+	reqBody := &models.AddFoodPlaceData{}
+
+	if err := c.Bind(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, "error binding body")
+	}
+
+	if err := c.Validate(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := a.accountUsecase.AddFoodPlaceAccount(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, err.Error())
+	}
+
+	return response(c, http.StatusCreated, "account successfully created")
 }
 
 // RegisterPersonAccount implements AccountHandler.

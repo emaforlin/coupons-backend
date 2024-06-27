@@ -1,8 +1,10 @@
 package repositories
 
 import (
-	"github.com/emaforlin/coupons-app/pkg/accounts/entities"
+	"fmt"
+
 	"github.com/emaforlin/coupons-app/pkg/database"
+	"github.com/emaforlin/coupons-app/pkg/entities"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -10,9 +12,24 @@ type accountsMysqlRepositoryImpl struct {
 	db database.Database
 }
 
+// InsertFoodPlace implements AccountsRepository.
+func (u *accountsMysqlRepositoryImpl) InsertFoodPlace(in *entities.InsertFoodPlaceDto) error {
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.User.Password), 12)
+	if err != nil {
+		return err
+	}
+	// hash password
+	in.User.Password = string(hash)
+	fmt.Printf("Insert FoodPlace: %#v", in)
+	response := u.db.GetDb().Create(in)
+	if response.Error != nil {
+		return response.Error
+	}
+	return nil
+}
+
 // DeleteUser implements AccountsRepository.
 func (u *accountsMysqlRepositoryImpl) DeleteUser(in *entities.GetUserDto) error {
-	// res := u.db.GetDb().Model(&entities.GetUserDto{ID: id}).Update("deleted_at", time.Now())
 	res := u.db.GetDb().Delete(in)
 	if res.Error != nil {
 		return res.Error
@@ -40,6 +57,7 @@ func (u *accountsMysqlRepositoryImpl) InsertPerson(in *entities.InsertPersonDto)
 	}
 	// hash password
 	in.User.Password = string(hash)
+	fmt.Printf("Insert Person: %#v", in)
 	response := u.db.GetDb().Create(in)
 	if response.Error != nil {
 		return response.Error

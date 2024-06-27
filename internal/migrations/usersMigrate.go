@@ -3,10 +3,10 @@ package main
 import (
 	"fmt"
 
-	"github.com/emaforlin/coupons-app/pkg/accounts/entities"
-	"github.com/emaforlin/coupons-app/pkg/accounts/models"
 	"github.com/emaforlin/coupons-app/pkg/config"
 	"github.com/emaforlin/coupons-app/pkg/database"
+	"github.com/emaforlin/coupons-app/pkg/entities"
+	"github.com/emaforlin/coupons-app/pkg/models"
 )
 
 var records = []models.AddPersonAccountData{

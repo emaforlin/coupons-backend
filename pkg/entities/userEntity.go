@@ -14,7 +14,7 @@ type (
 		Email       string         `gorm:"not null;unique" json:"email"`
 		PhoneNumber string         `gorm:"not null;unique" json:"phone_number"`
 		Password    string         `gorm:"not null" json:"password"`
-		CreatedAt   time.Time      `gorm:"auusertoCreateTime" json:"created_at"`
+		CreatedAt   time.Time      `gorm:"autoCreateTime" json:"created_at"`
 		UpdatedAt   time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 		DeletedAt   gorm.DeletedAt `gorm:"" json:"deleted_at"`
 	}

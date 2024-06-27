@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/emaforlin/coupons-app/pkg/accounts/handlers"
-	"github.com/emaforlin/coupons-app/pkg/accounts/repositories"
-	"github.com/emaforlin/coupons-app/pkg/accounts/usecases"
 	"github.com/emaforlin/coupons-app/pkg/config"
 	"github.com/emaforlin/coupons-app/pkg/database"
+	"github.com/emaforlin/coupons-app/pkg/handlers"
+	"github.com/emaforlin/coupons-app/pkg/repositories"
+	"github.com/emaforlin/coupons-app/pkg/usecases"
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -37,7 +37,7 @@ func (s *echoServer) initializeHttpHandlers() {
 	// Initialize repositories, usescases, handlers here...
 	repository := repositories.NewAccountMysqlRepositoryImpl(s.db)
 	usecase := usecases.NewAccountUsecaseImpl(repository)
-	httpHandler := handlers.NewAccountHttpHandler(usecase)
+	accountsHttpHandler := handlers.NewAccountHttpHandler(usecase)
 
 	// 	######## public routers ########
 
@@ -47,7 +47,8 @@ func (s *echoServer) initializeHttpHandlers() {
 	})
 
 	accountsRouter := s.app.Group(s.cfg.App.ApiVersion + "/accounts")
-	accountsRouter.POST("/signup", httpHandler.SignupPerson)
+	accountsRouter.POST("/signup", accountsHttpHandler.SignupPerson)
+	accountsRouter.POST("/signup/partner", accountsHttpHandler.SignupFoodPlace)
 
 }
 

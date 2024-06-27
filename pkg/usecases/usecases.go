@@ -1,8 +1,8 @@
 package usecases
 
 import (
-	"github.com/emaforlin/coupons-app/pkg/accounts/entities"
-	"github.com/emaforlin/coupons-app/pkg/accounts/models"
+	"github.com/emaforlin/coupons-app/pkg/entities"
+	"github.com/emaforlin/coupons-app/pkg/models"
 )
 
 type AccountUsecase interface {
@@ -14,4 +14,5 @@ type AccountUsecase interface {
 	AddPersonAccount(in *models.AddPersonAccountData) error
 
 	// Accounts of type FoodPlace
+	AddFoodPlaceAccount(in *models.AddFoodPlaceData) error
 }
