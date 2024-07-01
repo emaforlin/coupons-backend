@@ -12,15 +12,52 @@ type accountsMysqlRepositoryImpl struct {
 	db database.Database
 }
 
-// InsertFoodPlace implements AccountsRepository.
+func (u *accountsMysqlRepositoryImpl) SelectFoodPlace(in *entities.GetFoodPlaceDto) (*entities.FoodPlace, error) {
+	result := &entities.FoodPlace{}
+	response := u.db.GetDb().First(&result, in)
+	if response.Error != nil {
+		return nil, response.Error
+	}
+	return result, nil
+}
+
+func (u *accountsMysqlRepositoryImpl) SelectPerson(in *entities.GetPersonDto) (*entities.Person, error) {
+	result := &entities.Person{}
+	response := u.db.GetDb().First(&result, in)
+	if response.Error != nil {
+		return nil, response.Error
+	}
+	return result, nil
+}
+
+func (u *accountsMysqlRepositoryImpl) GetAccountPasswordHash(in *entities.GetUserDto) (string, error) {
+	type getPasswd struct {
+		Password string `gorm:"not null" json:"password"`
+	}
+
+	result := getPasswd{}
+	response := u.db.GetDb().Table("users").First(&result, in)
+	if response.Error != nil {
+		return "", response.Error
+	}
+	return result.Password, nil
+}
+
+func (u *accountsMysqlRepositoryImpl) UpdateFoodPlace(id uint32, in *entities.InsertFoodPlaceDto) error {
+	response := u.db.GetDb().Where("user_id = ?", id).Updates(in)
+	if response.Error != nil {
+		return response.Error
+	}
+	return nil
+}
+
 func (u *accountsMysqlRepositoryImpl) InsertFoodPlace(in *entities.InsertFoodPlaceDto) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(in.User.Password), 12)
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.User.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
 	// hash password
 	in.User.Password = string(hash)
-	fmt.Printf("Insert FoodPlace: %#v", in)
 	response := u.db.GetDb().Create(in)
 	if response.Error != nil {
 		return response.Error
@@ -28,8 +65,7 @@ func (u *accountsMysqlRepositoryImpl) InsertFoodPlace(in *entities.InsertFoodPla
 	return nil
 }
 
-// DeleteUser implements AccountsRepository.
-func (u *accountsMysqlRepositoryImpl) DeleteUser(in *entities.GetUserDto) error {
+func (u *accountsMysqlRepositoryImpl) DeleteAccount(in *entities.GetUserDto) error {
 	res := u.db.GetDb().Delete(in)
 	if res.Error != nil {
 		return res.Error
@@ -37,21 +73,17 @@ func (u *accountsMysqlRepositoryImpl) DeleteUser(in *entities.GetUserDto) error 
 	return nil
 }
 
-// GetUser implements AccountsRepository.
-func (u *accountsMysqlRepositoryImpl) SelectUser(in *entities.GetUserDto) (*entities.User, error) {
+func (u *accountsMysqlRepositoryImpl) SelectAccount(in *entities.GetUserDto) (*entities.User, error) {
 	result := &entities.User{}
-	response := u.db.GetDb().Table("users").Find(&result, in) //Model(&in).Find(&result)
-
+	response := u.db.GetDb().Find(&result, in)
 	if response.Error != nil {
 		return nil, response.Error
 	}
-
 	return result, nil
 }
 
-// AddPerson implements AccountsRepository
 func (u *accountsMysqlRepositoryImpl) InsertPerson(in *entities.InsertPersonDto) error {
-	hash, err := bcrypt.GenerateFromPassword([]byte(in.User.Password), 12)
+	hash, err := bcrypt.GenerateFromPassword([]byte(in.User.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
