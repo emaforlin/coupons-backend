@@ -9,3 +9,7 @@ type AddFoodPlaceData struct {
 	Location     string   `json:"location" validate:"required"`
 	Tags         []string `json:"tags" validate:"required"`
 }
+
+type VerifyFoodPlace struct {
+	Email string `json:"email" validate:"required,email"`
+}
