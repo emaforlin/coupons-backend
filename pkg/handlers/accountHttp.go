@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/emaforlin/coupons-app/pkg/models"
@@ -12,7 +13,43 @@ type accountHttpHandler struct {
 	accountUsecase usecases.AccountUsecase
 }
 
-// SignupFoodPlace implements AccountHandler.
+func (a *accountHttpHandler) Login(c echo.Context) error {
+	reqBody := &models.Login{}
+	if err := c.Bind(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, "error binding body")
+	}
+
+	if err := c.Validate(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, "missing required fields")
+	}
+	_, err := a.accountUsecase.Authenticate(reqBody)
+	if err != nil {
+		return response(c, http.StatusUnauthorized, "error unauthorized")
+	}
+	token, err := a.accountUsecase.Authorize(reqBody)
+	if err != nil {
+		return response(c, http.StatusUnauthorized, "error unauthorized")
+	}
+	return response(c, http.StatusOK, fmt.Sprintf("successfully logged in, token %s", token))
+}
+
+func (a *accountHttpHandler) VerifyFoodPlace(c echo.Context) error {
+	reqBody := &models.VerifyFoodPlace{}
+	if err := c.Bind(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, "error binding body")
+	}
+
+	if err := c.Validate(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, err.Error())
+	}
+
+	if err := a.accountUsecase.VerifyFoodPlace(reqBody); err != nil {
+		return response(c, http.StatusBadRequest, err.Error())
+	}
+
+	return response(c, http.StatusCreated, "food place verified succesfully")
+}
+
 func (a *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
 	reqBody := &models.AddFoodPlaceData{}
 
@@ -31,7 +68,6 @@ func (a *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
 	return response(c, http.StatusCreated, "account successfully created")
 }
 
-// RegisterPersonAccount implements AccountHandler.
 func (a *accountHttpHandler) SignupPerson(c echo.Context) error {
 	reqBody := &models.AddPersonAccountData{}
 

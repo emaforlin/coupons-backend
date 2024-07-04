@@ -7,6 +7,7 @@ import (
 type Config struct {
 	App App
 	Db  Db
+	Jwt Jwt
 }
 
 type App struct {
@@ -20,6 +21,11 @@ type Db struct {
 	User   string
 	Passwd string
 	Host   string
+}
+
+type Jwt struct {
+	Secret []byte
+	TTL    uint // minutes
 }
 
 func LoadConfig() *Config {
@@ -38,6 +44,10 @@ func LoadConfig() *Config {
 			User:   viper.GetString("database.user"),
 			Passwd: viper.GetString("database.password"),
 			Host:   viper.GetString("database.host"),
+		},
+		Jwt: Jwt{
+			Secret: []byte(viper.GetString("service.jwt.secret")),
+			TTL:    viper.GetUint("service.jwt.ttl"),
 		},
 	}
 }

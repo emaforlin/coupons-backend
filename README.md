@@ -1,25 +1,17 @@
-# Accounts Service
+# Coupons App Backend
 
-## Setup
+This project ~~is~~ (will be) the backend for a platform designed to facilitate the offer and redemption of discount coupons by different types of users. The platform let "Food Places" perform CRUD operations (create, retrieve, update, delete) on coupons, while "Customer" can view and use these coupons.
 
-Setup the service instace by editing `config.yaml`.
+## Use cases
 
-``` yaml
-service:
-  api: "v0.1"       # api version
-  ports:  
-    - web: 8014     # http port
-    - rpc: 8015     # grpc port
-database:
-  name: "db-name"  
-  user: "db-username"
-  password: "changepass"
-  host: "localhost:3306"
-```
+* **Account Creation:** All the aspiring user can create its own account, only that if it's a "FoodPlace" needs to be verified manually by an admin.
+* **Login and Permissions:** JWT is used to authorize users and define access permissions.
 
-## Endpoints
+* *In progress...*
 
-### HTTP: /{api_vers}/accounts
+## Next steps
 
-* **GET** /health
-* **POST** /signup
+* Continue backend development
+* Create container image
+* Set up automated tests and deployment
+* Separate backend into microservices

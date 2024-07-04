@@ -10,9 +10,7 @@ type (
 	}
 
 	GetFoodPlaceDto struct {
-		UserId       uint32
-		BusinessName string
-		Location     string
+		UserId uint32
 	}
 
 	FoodPlace struct {
@@ -24,6 +22,9 @@ type (
 	}
 )
 
-func (f InsertFoodPlaceDto) TableName() string {
+func (InsertFoodPlaceDto) TableName() string {
+	return "food_places"
+}
+func (GetFoodPlaceDto) TableName() string {
 	return "food_places"
 }

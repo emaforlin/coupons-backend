@@ -1,8 +1,6 @@
 package repositories
 
 import (
-	"fmt"
-
 	"github.com/emaforlin/coupons-app/pkg/database"
 	"github.com/emaforlin/coupons-app/pkg/entities"
 	"golang.org/x/crypto/bcrypt"
@@ -14,7 +12,7 @@ type accountsMysqlRepositoryImpl struct {
 
 func (u *accountsMysqlRepositoryImpl) SelectFoodPlace(in *entities.GetFoodPlaceDto) (*entities.FoodPlace, error) {
 	result := &entities.FoodPlace{}
-	response := u.db.GetDb().First(&result, in)
+	response := u.db.GetDb().Model(entities.GetFoodPlaceDto{}).First(&result, in)
 	if response.Error != nil {
 		return nil, response.Error
 	}
@@ -23,7 +21,7 @@ func (u *accountsMysqlRepositoryImpl) SelectFoodPlace(in *entities.GetFoodPlaceD
 
 func (u *accountsMysqlRepositoryImpl) SelectPerson(in *entities.GetPersonDto) (*entities.Person, error) {
 	result := &entities.Person{}
-	response := u.db.GetDb().First(&result, in)
+	response := u.db.GetDb().Model(entities.GetPersonDto{}).First(&result, in)
 	if response.Error != nil {
 		return nil, response.Error
 	}
@@ -75,7 +73,7 @@ func (u *accountsMysqlRepositoryImpl) DeleteAccount(in *entities.GetUserDto) err
 
 func (u *accountsMysqlRepositoryImpl) SelectAccount(in *entities.GetUserDto) (*entities.User, error) {
 	result := &entities.User{}
-	response := u.db.GetDb().Find(&result, in)
+	response := u.db.GetDb().Model(entities.GetUserDto{}).Find(&result, in)
 	if response.Error != nil {
 		return nil, response.Error
 	}
@@ -89,7 +87,6 @@ func (u *accountsMysqlRepositoryImpl) InsertPerson(in *entities.InsertPersonDto)
 	}
 	// hash password
 	in.User.Password = string(hash)
-	fmt.Printf("Insert Person: %#v", in)
 	response := u.db.GetDb().Create(in)
 	if response.Error != nil {
 		return response.Error
