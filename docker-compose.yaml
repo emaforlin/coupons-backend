@@ -1,0 +1,33 @@
+services:
+  coupons:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+     - MIGRATE=false
+    volumes:
+      - ./.config:/app/.conf
+    ports:
+      - "8000:80"
+    depends_on:
+     database:
+       condition: service_healthy
+       restart: true
+        
+  database:
+    image: mysql:latest
+    volumes:
+      - ./db-data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
+    environment:
+     - MYSQL_ROOT_PASSWORD=justfordevpurpouses
+     - MYSQL_USER=appuser
+     - MYSQL_PASSWORD=strongpassword
+     - MYSQL_DATABASE=app

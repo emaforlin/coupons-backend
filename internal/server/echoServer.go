@@ -4,12 +4,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/emaforlin/coupons-app/pkg/config"
-	"github.com/emaforlin/coupons-app/pkg/database"
-	"github.com/emaforlin/coupons-app/pkg/handlers"
-	"github.com/emaforlin/coupons-app/pkg/helpers"
-	"github.com/emaforlin/coupons-app/pkg/repositories"
-	"github.com/emaforlin/coupons-app/pkg/usecases"
+	"github.com/emaforlin/coupons-app/internal/config"
+	"github.com/emaforlin/coupons-app/internal/database"
+	"github.com/emaforlin/coupons-app/internal/handlers"
+	"github.com/emaforlin/coupons-app/internal/helpers"
+	"github.com/emaforlin/coupons-app/internal/repositories"
+	"github.com/emaforlin/coupons-app/internal/usecases"
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt/v5"
 	echojwt "github.com/labstack/echo-jwt/v4"
@@ -26,12 +26,10 @@ type echoServer struct {
 func (s *echoServer) Start() {
 	s.initializeHttpHandlers()
 
-	s.app.Use(middleware.Logger())
-	s.app.Use(middleware.Recover())
-	s.app.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{Timeout: 1 * time.Second}))
+	s.app.Use(middleware.Logger(), middleware.Recover(), middleware.TimeoutWithConfig(middleware.TimeoutConfig{Timeout: 1 * time.Second}))
 	s.app.Validator = &handlers.CustomValidator{V: validator.New()}
 
-	serverURL := fmt.Sprintf(":%d", s.cfg.App.Ports["web"])
+	serverURL := fmt.Sprintf(":%d", s.cfg.App.Port)
 	s.app.Logger.Fatal(s.app.Start(serverURL))
 }
 
@@ -59,7 +57,6 @@ func (s *echoServer) initializeHttpHandlers() {
 		},
 	}))
 
-	authorized.POST("/verify", accountsHttpHandler.VerifyFoodPlace, handlers.CheckRole("Adm"))
 }
 
 func NewEchoServer(cfg *config.Config, db database.Database) Server {

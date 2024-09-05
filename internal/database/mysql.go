@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/emaforlin/coupons-app/pkg/config"
+	"github.com/emaforlin/coupons-app/internal/config"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

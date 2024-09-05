@@ -10,10 +10,11 @@ type (
 	InsertUserDto struct {
 		ID          uint32         `gorm:"primaryKey;autoIncrement" json:"user_id"`
 		Username    string         `gorm:"not null;unique" json:"username"`
-		Role        string         `gorm:"not null;type:enum('Customer','FoodPlace','Adm');default:'Customer'" json:"role"`
+		Role        string         `gorm:"not null;type:enum('Customer','FoodPlace');default:'Customer'" json:"role"`
 		Email       string         `gorm:"not null;unique" json:"email"`
 		PhoneNumber string         `gorm:"not null;unique" json:"phone_number"`
 		Password    string         `gorm:"not null" json:"password"`
+		Verified    bool           `gorm:"not null;default:false" json:"verified"`
 		CreatedAt   time.Time      `gorm:"autoCreateTime" json:"created_at"`
 		UpdatedAt   time.Time      `gorm:"autoUpdateTime" json:"updated_at"`
 		DeletedAt   gorm.DeletedAt `gorm:"" json:"deleted_at"`
@@ -25,6 +26,7 @@ type (
 		Role        string
 		Email       string
 		PhoneNumber string
+		Verified    bool
 		CreatedAt   time.Time
 		UpdatedAt   time.Time
 		DeletedAt   gorm.DeletedAt
@@ -37,6 +39,7 @@ type (
 		Email       string         `json:"email"`
 		PhoneNumber string         `json:"phone_number"`
 		Password    string         `json:"password"`
+		Verified    bool           `json:"verified"`
 		CreatedAt   time.Time      `json:"created_at"`
 		UpdatedAt   time.Time      `json:"updated_at"`
 		DeletedAt   gorm.DeletedAt `json:"deleted_at"`

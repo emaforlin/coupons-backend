@@ -6,5 +6,4 @@ type AccountHandler interface {
 	Login(c echo.Context) error
 	SignupPerson(c echo.Context) error
 	SignupFoodPlace(c echo.Context) error
-	VerifyFoodPlace(c echo.Context) error
 }

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/emaforlin/coupons-app/internal/usecases"
 	"github.com/emaforlin/coupons-app/pkg/models"
-	"github.com/emaforlin/coupons-app/pkg/usecases"
 	"github.com/labstack/echo/v4"
 )
 
@@ -33,25 +33,8 @@ func (a *accountHttpHandler) Login(c echo.Context) error {
 	return response(c, http.StatusOK, fmt.Sprintf("successfully logged in, token %s", token))
 }
 
-func (a *accountHttpHandler) VerifyFoodPlace(c echo.Context) error {
-	reqBody := &models.VerifyFoodPlace{}
-	if err := c.Bind(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, "error binding body")
-	}
-
-	if err := c.Validate(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
-	}
-
-	if err := a.accountUsecase.VerifyFoodPlace(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
-	}
-
-	return response(c, http.StatusCreated, "food place verified succesfully")
-}
-
 func (a *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
-	reqBody := &models.AddFoodPlaceData{}
+	reqBody := new(models.AddFoodPlaceAccountData)
 
 	if err := c.Bind(reqBody); err != nil {
 		return response(c, http.StatusBadRequest, "error binding body")

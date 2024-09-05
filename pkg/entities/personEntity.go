@@ -22,3 +22,7 @@ type (
 func (InsertPersonDto) TableName() string {
 	return "customers"
 }
+
+func (GetPersonDto) TableName() string {
+	return "customers"
+}

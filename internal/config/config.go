@@ -1,7 +1,13 @@
 package config
 
 import (
+	"flag"
+
 	"github.com/spf13/viper"
+)
+
+var (
+	debug bool
 )
 
 type Config struct {
@@ -12,7 +18,7 @@ type Config struct {
 
 type App struct {
 	ApiVersion string
-	Ports      map[string]uint16
+	Port       int
 }
 
 type Db struct {
@@ -29,15 +35,14 @@ type Jwt struct {
 }
 
 func LoadConfig() *Config {
-	var ports map[string]uint16
-	err := viper.UnmarshalKey("service.ports", &ports)
-	if err != nil {
-		panic("error loading config file")
+	var p = 80
+	if debug {
+		p = 8080
 	}
 	return &Config{
 		App: App{
 			ApiVersion: viper.GetString("service.api"),
-			Ports:      ports,
+			Port:       p,
 		},
 		Db: Db{
 			Name:   viper.GetString("database.name"),
@@ -53,9 +58,13 @@ func LoadConfig() *Config {
 }
 
 func InitViper(filename string) {
+	flag.BoolVar(&debug, "debug", false, "enable debug mode")
+	flag.Parse()
+
 	viper.SetConfigName(filename)
 	viper.SetConfigType("yaml")
 	viper.AddConfigPath("./")
+	viper.AddConfigPath("./.conf")
 
 	if err := viper.ReadInConfig(); err != nil {
 		panic("error reading config file")

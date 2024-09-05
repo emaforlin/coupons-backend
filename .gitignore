@@ -1,6 +1,7 @@
 # Sensitive data
-config.yaml
+.config/
 misc/
+db-data/
 
 # temp files
 

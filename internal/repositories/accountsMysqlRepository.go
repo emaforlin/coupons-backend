@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"github.com/emaforlin/coupons-app/pkg/database"
+	"github.com/emaforlin/coupons-app/internal/database"
 	"github.com/emaforlin/coupons-app/pkg/entities"
 	"golang.org/x/crypto/bcrypt"
 )

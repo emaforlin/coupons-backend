@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/emaforlin/coupons-app/pkg/config"
+	"github.com/emaforlin/coupons-app/internal/config"
+	"github.com/emaforlin/coupons-app/internal/helpers"
+	"github.com/emaforlin/coupons-app/internal/repositories"
 	"github.com/emaforlin/coupons-app/pkg/entities"
-	"github.com/emaforlin/coupons-app/pkg/helpers"
 	"github.com/emaforlin/coupons-app/pkg/models"
-	"github.com/emaforlin/coupons-app/pkg/repositories"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
@@ -18,12 +18,10 @@ type AccountUsecase interface {
 	Authenticate(in *models.Login) (*entities.User, error)
 	Authorize(in *models.Login) (string, error)
 	GetAccountDetails(in *models.GetAccountData) (*entities.User, error)
-	DeleteAccount(in *models.DeleteAccountData) error
 
 	AddPersonAccount(in *models.AddPersonAccountData) error
 
-	VerifyFoodPlace(in *models.VerifyFoodPlace) error
-	AddFoodPlaceAccount(in *models.AddFoodPlaceData) error
+	AddFoodPlaceAccount(in *models.AddFoodPlaceAccountData) error
 }
 
 type accountUsecaseImpl struct {
@@ -60,26 +58,7 @@ func (u *accountUsecaseImpl) Authenticate(in *models.Login) (*entities.User, err
 	return account, nil
 }
 
-func (u *accountUsecaseImpl) VerifyFoodPlace(in *models.VerifyFoodPlace) error {
-	// find user id
-	user, err := u.repository.SelectAccount(&entities.GetUserDto{Email: in.Email})
-	if err != nil {
-		return err
-	}
-
-	found, err := u.repository.SelectFoodPlace(&entities.GetFoodPlaceDto{UserId: user.ID})
-	if err != nil {
-		return err
-	}
-	err = u.repository.UpdateFoodPlace(found.UserId, &entities.InsertFoodPlaceDto{Verified: true})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (u *accountUsecaseImpl) AddFoodPlaceAccount(in *models.AddFoodPlaceData) error {
+func (u *accountUsecaseImpl) AddFoodPlaceAccount(in *models.AddFoodPlaceAccountData) error {
 	_, err := u.repository.SelectAccount(&entities.GetUserDto{
 		Username:    in.Username,
 		Email:       in.Email,
@@ -108,12 +87,6 @@ func (u *accountUsecaseImpl) AddFoodPlaceAccount(in *models.AddFoodPlaceData) er
 	}
 
 	return nil
-}
-
-func (u *accountUsecaseImpl) DeleteAccount(in *models.DeleteAccountData) error {
-	return u.repository.DeleteAccount(&entities.GetUserDto{
-		ID: in.Id,
-	})
 }
 
 func (u *accountUsecaseImpl) AddPersonAccount(in *models.AddPersonAccountData) error {
@@ -147,11 +120,7 @@ func (u *accountUsecaseImpl) AddPersonAccount(in *models.AddPersonAccountData) e
 }
 
 func (u *accountUsecaseImpl) GetAccountDetails(in *models.GetAccountData) (*entities.User, error) {
-	found, err := u.repository.SelectAccount(&entities.GetUserDto{
-		Username:    in.Username,
-		Email:       in.Email,
-		PhoneNumber: in.PhoneNumber,
-	})
+	found, err := u.repository.SelectAccount(&entities.GetUserDto{ID: in.ID})
 
 	if err != nil {
 		log.Err(err)
