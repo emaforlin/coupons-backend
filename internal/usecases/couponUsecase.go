@@ -1,13 +1,16 @@
 package usecases
 
 import (
+	"log"
+
+	"github.com/emaforlin/coupons-app/internal/repositories"
 	"github.com/emaforlin/coupons-app/pkg/entities"
 	"github.com/emaforlin/coupons-app/pkg/models"
 )
 
 type CouponUsecase interface {
 	Create(in *models.AddCoupon) (int, error)
-	GetAll() []*entities.Coupon
+	GetAll() ([]entities.Coupon, error)
 	Delete(id int) error
 	Update(in *models.AddCoupon) error
 
@@ -16,7 +19,9 @@ type CouponUsecase interface {
 	Claim(id int) (string, error)
 }
 
-type couponUsecaseImpl struct{}
+type couponUsecaseImpl struct {
+	repository repositories.CouponsRepository
+}
 
 // Claim implements CouponUsecase.
 func (c *couponUsecaseImpl) Claim(id int) (string, error) {
@@ -25,22 +30,49 @@ func (c *couponUsecaseImpl) Claim(id int) (string, error) {
 
 // Create implements CouponUsecase.
 func (c *couponUsecaseImpl) Create(in *models.AddCoupon) (int, error) {
-	panic("unimplemented")
+	id, err := c.repository.InsertCoupon(&entities.InsertCouponDto{
+		OwnerID:   in.OwnerID,
+		Code:      in.Code,
+		Title:     in.Title,
+		Discount:  in.Discount,
+		Remaining: in.Remaining,
+	})
+	if err != nil {
+		log.Println("cannot create new coupon", err)
+		return -1, err
+	}
+	return id, nil
 }
 
 // Delete implements CouponUsecase.
 func (c *couponUsecaseImpl) Delete(id int) error {
-	panic("unimplemented")
+	return c.repository.DeleteCoupon(id)
 }
 
 // GetAll implements CouponUsecase.
-func (c *couponUsecaseImpl) GetAll() []*entities.Coupon {
-	panic("unimplemented")
+func (c *couponUsecaseImpl) GetAll() ([]entities.Coupon, error) {
+	coupons, err := c.repository.SelectAllCoupons()
+	if err != nil {
+		log.Println("error retrieving coupons", err)
+		return nil, err
+	}
+	return coupons, nil
 }
 
 // Update implements CouponUsecase.
 func (c *couponUsecaseImpl) Update(in *models.AddCoupon) error {
-	panic("unimplemented")
+	err := c.repository.UpdateCoupon(&entities.InsertCouponDto{
+		OwnerID:   in.OwnerID,
+		Code:      in.Code,
+		Title:     in.Title,
+		Discount:  in.Discount,
+		Remaining: in.Remaining,
+	})
+	if err != nil {
+		log.Println("cannot create new coupon", err)
+		return err
+	}
+	return nil
 }
 
 // Use implements CouponUsecase.
@@ -48,6 +80,8 @@ func (c *couponUsecaseImpl) Use(couponCode string) (string, error) {
 	panic("unimplemented")
 }
 
-func NewCouponUsecase() CouponUsecase {
-	return &couponUsecaseImpl{}
+func NewCouponUsecase(mysqlRepo repositories.CouponsRepository) CouponUsecase {
+	return &couponUsecaseImpl{
+		repository: mysqlRepo,
+	}
 }
