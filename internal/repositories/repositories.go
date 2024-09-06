@@ -18,5 +18,5 @@ type CouponsRepository interface {
 	InsertCoupon(in *entities.InsertCouponDto) (int, error)
 	UpdateCoupon(in *entities.InsertCouponDto) error
 	DeleteCoupon(id int) error
-	SelectAllCoupons() ([]*entities.Coupon, error)
+	SelectAllCoupons() ([]entities.Coupon, error)
 }
