@@ -6,7 +6,7 @@ services:
     environment:
      - MIGRATE=false
     volumes:
-      - ./.config:/app/.conf
+      - ./.conf:/app/.conf
     ports:
       - "8000:80"
     depends_on:

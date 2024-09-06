@@ -7,12 +7,9 @@ import (
 	"github.com/emaforlin/coupons-app/internal/config"
 	"github.com/emaforlin/coupons-app/internal/database"
 	"github.com/emaforlin/coupons-app/internal/handlers"
-	"github.com/emaforlin/coupons-app/internal/helpers"
 	"github.com/emaforlin/coupons-app/internal/repositories"
 	"github.com/emaforlin/coupons-app/internal/usecases"
 	"github.com/go-playground/validator/v10"
-	"github.com/golang-jwt/jwt/v5"
-	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -48,14 +45,6 @@ func (s *echoServer) initializeHttpHandlers() {
 	public.POST("/login", accountsHttpHandler.Login)
 	public.POST("/signup", accountsHttpHandler.SignupPerson)
 	public.POST("/signup/partner", accountsHttpHandler.SignupFoodPlace)
-
-	authorized := public.Group("/priv")
-	authorized.Use(echojwt.WithConfig(echojwt.Config{
-		SigningKey: s.cfg.Jwt.Secret,
-		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(helpers.CustomJWTClaims)
-		},
-	}))
 
 }
 

@@ -13,3 +13,10 @@ type AccountsRepository interface {
 	InsertFoodPlace(in *entities.InsertFoodPlaceDto) error
 	UpdateFoodPlace(userId uint32, in *entities.InsertFoodPlaceDto) error
 }
+
+type CouponsRepository interface {
+	InsertCoupon(in *entities.InsertCouponDto) (int, error)
+	UpdateCoupon(in *entities.InsertCouponDto) error
+	DeleteCoupon(id int) error
+	SelectAllCoupons() ([]*entities.Coupon, error)
+}

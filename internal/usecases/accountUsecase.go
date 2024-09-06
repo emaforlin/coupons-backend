@@ -2,14 +2,11 @@ package usecases
 
 import (
 	"fmt"
-	"time"
 
 	"github.com/emaforlin/coupons-app/internal/config"
-	"github.com/emaforlin/coupons-app/internal/helpers"
 	"github.com/emaforlin/coupons-app/internal/repositories"
 	"github.com/emaforlin/coupons-app/pkg/entities"
 	"github.com/emaforlin/coupons-app/pkg/models"
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/rs/zerolog/log"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -30,15 +27,16 @@ type accountUsecaseImpl struct {
 }
 
 func (u *accountUsecaseImpl) Authorize(in *models.Login) (string, error) {
-	claims := helpers.CustomJWTClaims{
-		Role: in.AccountType,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(u.jwtConfig.TTL))),
-		},
-	}
+	// claims := helpers.CustomJWTClaims{
+	// 	Role: in.AccountType,
+	// 	RegisteredClaims: jwt.RegisteredClaims{
+	// 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(u.jwtConfig.TTL))),
+	// 	},
+	// }
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(u.jwtConfig.Secret)
+	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// return token.SignedString(u.jwtConfig.Secret)
+	panic("unimplemented")
 }
 
 func (u *accountUsecaseImpl) Authenticate(in *models.Login) (*entities.User, error) {
