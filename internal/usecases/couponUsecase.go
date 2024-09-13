@@ -10,12 +10,10 @@ import (
 
 type CouponUsecase interface {
 	Create(in *models.AddCoupon) (int, error)
-	GetAll() ([]entities.Coupon, error)
+	Get(in *models.GetCoupons) ([]entities.Coupon, error)
 	Delete(id int) error
 	Update(in *models.AddCoupon) error
-
 	Use(couponCode string) (string, error)
-
 	Claim(id int) (string, error)
 }
 
@@ -50,8 +48,9 @@ func (c *couponUsecaseImpl) Delete(id int) error {
 }
 
 // GetAll implements CouponUsecase.
-func (c *couponUsecaseImpl) GetAll() ([]entities.Coupon, error) {
-	coupons, err := c.repository.SelectAllCoupons()
+func (c *couponUsecaseImpl) Get(in *models.GetCoupons) ([]entities.Coupon, error) {
+	coupons, err := c.repository.SelectCoupons(&entities.GetCouponDto{ID: in.ID, BatchSize: in.BatchSize})
+
 	if err != nil {
 		log.Println("error retrieving coupons", err)
 		return nil, err

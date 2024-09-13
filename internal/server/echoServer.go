@@ -31,20 +31,28 @@ func (s *echoServer) Start() {
 }
 
 func (s *echoServer) initializeHttpHandlers() {
-	// Initialize repositories, usescases, handlers here...
-	repository := repositories.NewAccountMysqlRepositoryImpl(s.db)
-	usecase := usecases.NewAccountUsecaseImpl(repository, s.cfg.Jwt)
-	accountsHttpHandler := handlers.NewAccountHttpHandler(usecase)
-
 	public := s.app.Group("/" + s.cfg.App.ApiVersion)
 	public.GET("/health", func(c echo.Context) error {
 		s.app.Logger.Info("Handle /health")
 		return c.String(200, "OK")
 	})
 
+	// Accounts
+	accountsRepo := repositories.NewAccountMysqlRepositoryImpl(s.db)
+	accountsUsecase := usecases.NewAccountUsecaseImpl(accountsRepo, s.cfg.Jwt)
+	accountsHttpHandler := handlers.NewAccountHttpHandler(accountsUsecase)
+
 	public.POST("/login", accountsHttpHandler.Login)
 	public.POST("/signup", accountsHttpHandler.SignupPerson)
 	public.POST("/signup/partner", accountsHttpHandler.SignupFoodPlace)
+
+	// Coupons
+	couponsRepo := repositories.NewCouponMysqlRepositoryImpl(s.db)
+	couponsUsecase := usecases.NewCouponUsecase(couponsRepo)
+	couponsHandler := handlers.NewCouponHttpHandler(couponsUsecase)
+
+	public.POST("/coupons", couponsHandler.CreateCoupon)
+	public.GET("/coupons", couponsHandler.RetrieveCoupons)
 
 }
 
