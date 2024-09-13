@@ -8,8 +8,8 @@ import (
 
 type (
 	InsertCouponDto struct {
-		ID        int            `gorm:"primaryKey;autoIncrement"`
-		OwnerID   int            `gorm:"not null"`
+		ID        uint           `gorm:"primaryKey;autoIncrement"`
+		OwnerID   uint           `gorm:"not null"`
 		Code      string         `gorm:"not null;unique"`
 		Title     string         `gorm:"not null;unique"`
 		Discount  float32        `gorm:"not null"`
@@ -19,9 +19,14 @@ type (
 		DeletedAt gorm.DeletedAt `gorm:""`
 	}
 
+	GetCouponDto struct {
+		ID        uint
+		BatchSize int
+	}
+
 	Coupon struct {
-		ID        int       `json:"id,omitempty"`
-		OwnerID   int       `json:"owner_id,omitempty"`
+		ID        uint      `json:"id,omitempty"`
+		OwnerID   uint      `json:"owner_id,omitempty"`
 		Code      string    `json:"code,omitempty"`
 		Title     string    `json:"title"`
 		Discount  float32   `json:"discount"`
@@ -33,5 +38,9 @@ type (
 )
 
 func (InsertCouponDto) TableName() string {
+	return "coupons"
+}
+
+func (GetCouponDto) TableName() string {
 	return "coupons"
 }
