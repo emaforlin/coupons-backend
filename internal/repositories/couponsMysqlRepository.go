@@ -26,14 +26,25 @@ func (c *couponsMysqlRepositoryImpl) InsertCoupon(in *entities.InsertCouponDto) 
 	} else if err != nil {
 		return -1, err
 	}
-	return in.ID, nil
+	return int(in.ID), nil
 }
 
 // SelectAllCoupons implements CouponsRepository.
-func (c *couponsMysqlRepositoryImpl) SelectAllCoupons() ([]entities.Coupon, error) {
+func (c *couponsMysqlRepositoryImpl) SelectCoupons(in *entities.GetCouponDto) ([]entities.Coupon, error) {
 	var coupons []entities.Coupon
+	var batchSize = -1
+	var err error
 
-	err := c.db.GetDb().Find(&coupons).Error
+	if in.BatchSize > 0 {
+		batchSize = in.BatchSize
+	}
+
+	if in.ID > 0 {
+		err = c.db.GetDb().Limit(batchSize).Find(&coupons, in.ID).Error
+	} else {
+		err = c.db.GetDb().Limit(batchSize).Find(&coupons).Error
+	}
+
 	if err != nil {
 		return nil, err
 	}
