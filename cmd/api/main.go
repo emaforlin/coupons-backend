@@ -6,13 +6,14 @@ import (
 
 	"github.com/emaforlin/coupons-app/internal/config"
 	"github.com/emaforlin/coupons-app/internal/database"
+	"github.com/emaforlin/coupons-app/internal/server"
 )
 
 func main() {
 	config.InitViper("config")
 	conf := config.LoadConfig()
-	_ = database.NewMySQLDatabase(conf)
+	db := database.NewMySQLDatabase(conf)
 	fmt.Printf("Time: %s", time.Now().Format(time.DateTime))
 
-	// server.NewEchoServer(conf, db).Start()
+	server.NewEchoServer(conf, db).Start()
 }

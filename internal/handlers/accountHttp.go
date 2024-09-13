@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/emaforlin/coupons-app/internal/usecases"
@@ -13,60 +12,58 @@ type accountHttpHandler struct {
 	accountUsecase usecases.AccountUsecase
 }
 
-func (a *accountHttpHandler) Login(c echo.Context) error {
+func (h *accountHttpHandler) Login(c echo.Context) error {
 	reqBody := &models.Login{}
 	if err := c.Bind(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, "error binding body")
+		return errorMsg(c, "bad request")
 	}
 
 	if err := c.Validate(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, "missing required fields")
+		return errorMsg(c, err.Error())
 	}
-	_, err := a.accountUsecase.Authenticate(reqBody)
+
+	_, err := h.accountUsecase.Authenticate(reqBody)
 	if err != nil {
-		return response(c, http.StatusUnauthorized, "error unauthorized")
+		return errorMsg(c, "unauthorized", http.StatusUnauthorized)
 	}
-	token, err := a.accountUsecase.Authorize(reqBody)
+
+	token, err := h.accountUsecase.Authorize(reqBody)
 	if err != nil {
-		return response(c, http.StatusUnauthorized, "error unauthorized")
+		return errorMsg(c, "unauthorized", http.StatusUnauthorized)
 	}
-	return response(c, http.StatusOK, fmt.Sprintf("successfully logged in, token %s", token))
+	return responseMsg(c, token, http.StatusOK)
 }
 
-func (a *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
+func (h *accountHttpHandler) SignupFoodPlace(c echo.Context) error {
 	reqBody := new(models.AddFoodPlaceAccountData)
 
 	if err := c.Bind(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, "error binding body")
+		return errorMsg(c, "bad request")
 	}
 
 	if err := c.Validate(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
+		return errorMsg(c, err.Error())
 	}
 
-	if err := a.accountUsecase.AddFoodPlaceAccount(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
+	if err := h.accountUsecase.AddFoodPlaceAccount(reqBody); err != nil {
+		return errorMsg(c, "error creating food place account")
 	}
 
-	return response(c, http.StatusCreated, "account successfully created")
+	return responseMsg(c, "account successfully created", http.StatusCreated)
 }
 
-func (a *accountHttpHandler) SignupPerson(c echo.Context) error {
+func (h *accountHttpHandler) SignupPerson(c echo.Context) error {
 	reqBody := &models.AddPersonAccountData{}
 
 	if err := c.Bind(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, "error binding body")
+		return errorMsg(c, "bad request")
 	}
 
-	if err := c.Validate(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
+	if err := h.accountUsecase.AddPersonAccount(reqBody); err != nil {
+		return errorMsg(c, "error creating person account")
 	}
 
-	if err := a.accountUsecase.AddPersonAccount(reqBody); err != nil {
-		return response(c, http.StatusBadRequest, err.Error())
-	}
-
-	return response(c, http.StatusCreated, "account successfully created")
+	return responseMsg(c, "account successfully created", http.StatusCreated)
 }
 
 func NewAccountHttpHandler(u usecases.AccountUsecase) AccountHandler {
